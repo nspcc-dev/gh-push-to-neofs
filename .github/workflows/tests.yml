@@ -1,0 +1,126 @@
+name: Run automated tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+      - support/**
+    types: [opened, synchronize]
+    paths-ignore:
+      - '**/*.md'
+  release:
+    types:
+      - published
+  workflow_dispatch:
+
+env:
+  TESTS_DATA_DIR: './tests/data'
+
+permissions: write-all
+
+jobs:
+  run_system_tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 500
+    steps:
+      - name: Get the current date
+        id: date
+        shell: bash
+        run: |
+         echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: Set url prefix
+        shell: bash
+        env:
+          TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+        run: |
+          echo "URL_PREFIX=${{ github.run_number }}-$TIMESTAMP" >> $GITHUB_ENV
+
+      - name: Set attributes
+        shell: bash
+        env:
+          TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+        run: |
+          echo "NEOFS_ATTRIBUTES=RunNumber=${{ github.run_number }}-$TIMESTAMP,Type=action_test_files" >> $GITHUB_ENV
+
+      - name: Checkout gh-push-to-neofs
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.6'
+      - run: python --version
+
+      - name: Prepare venv
+        shell: bash
+        id: prepare_venv
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate && pip install -r requirements.txt
+        working-directory: ./tests
+
+      - name: Run gh-push-to-neofs with url prefix
+        id: gh_push_to_neofs_with_url_prefix
+        uses: ./
+        with:
+          NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
+          NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
+          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
+          LIFETIME: ${{ vars.LIFETIME }}
+          PATH_TO_FILES_DIR: ${{ env.TESTS_DATA_DIR }}
+          NEOFS_ATTRIBUTES: ${{ env.NEOFS_ATTRIBUTES }}
+          URL_PREFIX: ${{ env.URL_PREFIX }}
+
+      - name: Run tests
+        env:
+          OUTPUT_CONTAINER_URL: ${{ steps.gh_push_to_neofs_with_url_prefix.outputs.OUTPUT_CONTAINER_URL }}
+        run: |
+          source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL"
+        working-directory: ./tests
+
+      - name: Prepare directory name for tests without url prefix
+        shell: bash
+        env:
+          TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+        run: |
+          echo "PREFIX_DIR=${{ github.run_number }}-$TIMESTAMP-$(uuidgen)" >> $GITHUB_ENV
+
+      - name: Create a directory tree for tests with url prefix
+        shell: bash
+        run: |
+          mkdir "$PREFIX_DIR"
+
+      - name: Move files to the directory tree for tests with url prefix
+        shell: bash
+        env:
+          SOURCE_DIR: ${{ env.TESTS_DATA_DIR }}
+          DEST_DIR: ${{ env.PREFIX_DIR }}
+        run: |
+          rsync -av "$SOURCE_DIR" "$DEST_DIR"
+
+      - name: Run gh-push-to-neofs without url prefix
+        id: gh_push_to_neofs_without_url_prefix
+        uses: ./
+        with:
+          NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
+          NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
+          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
+          LIFETIME: ${{ vars.LIFETIME }}
+          PATH_TO_FILES_DIR: ${{ env.PREFIX_DIR }}
+          NEOFS_ATTRIBUTES: ${{ env.NEOFS_ATTRIBUTES }}
+
+      - name: Run tests
+        env:
+          OUTPUT_CONTAINER_URL: ${{ steps.gh_push_to_neofs_without_url_prefix.outputs.OUTPUT_CONTAINER_URL }}
+          REPORT_DIR: ${{ env.PREFIX_DIR }}
+        run: |
+          source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL" --report_dir="$REPORT_DIR"
+        working-directory: ./tests
