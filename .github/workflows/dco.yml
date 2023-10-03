@@ -1,0 +1,11 @@
+name: DCO check
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+
+jobs:
+  dco:
+    uses: nspcc-dev/.github/.github/workflows/dco.yml@master
