@@ -22,7 +22,7 @@ def download_file(url: str) -> str:
 )
 def test_file_content(base_url, report_dir, path):
     if base_url is None:
-        pytest.skip("base_url is not provided. Provide it using --base_url option.")
+        pytest.fail("base_url is not provided. Provide it using --base_url option.")
 
     if not base_url.endswith("/"):
         base_url += "/"
