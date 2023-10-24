@@ -68,15 +68,18 @@ runs:
       shell: bash
       env:
         NEOFS_WALLET: ${{ inputs.NEOFS_WALLET }}
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
       run: |
-        echo "$NEOFS_WALLET" | base64 -d > wallet.json
+        echo "$NEOFS_WALLET" | base64 -d > "$GITHUB_ACTION_PATH/wallet.json"
 
     - name: Prepare venv
       shell: bash
       id: prepare_venv
+      env:
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
       run: |
-        python3 -m venv venv
-        source venv/bin/activate && pip install -r requirements.txt
+        python3 -m venv "$GITHUB_ACTION_PATH/venv"
+        source "$GITHUB_ACTION_PATH/venv/bin/activate" && pip install -r "$GITHUB_ACTION_PATH/requirements.txt"
 
     - name: Put files to NeoFS
       shell: bash
@@ -90,10 +93,12 @@ runs:
         NEOFS_ATTRIBUTES: ${{ inputs.NEOFS_ATTRIBUTES }}
         URL_PREFIX: ${{ inputs.URL_PREFIX }}
         LIFETIME: ${{ inputs.LIFETIME }}
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
       run: |
-        source venv/bin/activate && NEOFS_CLI_PASSWORD=$NEOFS_WALLET_PASSWORD python ./push-to-neofs.py \
+        source "$GITHUB_ACTION_PATH/venv/bin/activate" && NEOFS_CLI_PASSWORD=$NEOFS_WALLET_PASSWORD python "$GITHUB_ACTION_PATH/push-to-neofs.py" \
         --lifetime "$LIFETIME" --neofs_domain "$NEOFS_NETWORK_DOMAIN" --attributes "$NEOFS_ATTRIBUTES" \
-        --cid "$STORE_OBJECTS_CID" --files-dir "$PATH_TO_FILES_DIR" --url_path_prefix "$URL_PREFIX" --wallet wallet.json
+        --cid "$STORE_OBJECTS_CID" --files-dir "$PATH_TO_FILES_DIR" --url_path_prefix "$URL_PREFIX" \
+        --wallet "$GITHUB_ACTION_PATH/wallet.json"
         BASE_URL="https://$NEOFS_HTTP_GATE/$STORE_OBJECTS_CID"
         if [ -z "$URL_PREFIX" ]; then
           echo "container_url=$BASE_URL/" >> $GITHUB_OUTPUT
