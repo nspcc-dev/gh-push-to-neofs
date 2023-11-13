@@ -84,6 +84,26 @@ jobs:
           source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL"
         working-directory: ./tests
 
+      - name: Run gh-push-to-neofs without attributes
+        id: gh_push_to_neofs_without_attributes
+        uses: ./
+        with:
+          NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
+          NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
+          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
+          LIFETIME: ${{ vars.LIFETIME }}
+          PATH_TO_FILES_DIR: ${{ env.TESTS_DATA_DIR }}
+          URL_PREFIX: ${{ env.URL_PREFIX }}
+
+      - name: Run tests
+        env:
+          OUTPUT_CONTAINER_URL: ${{ steps.gh_push_to_neofs_with_url_prefix.outputs.OUTPUT_CONTAINER_URL }}
+        run: |
+          source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL"
+        working-directory: ./tests
+
       - name: Prepare directory name for tests without url prefix
         shell: bash
         env:
