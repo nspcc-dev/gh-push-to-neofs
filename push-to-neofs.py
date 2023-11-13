@@ -27,6 +27,8 @@ def parse_args():
         "For example, it's convenient to create url links to access an object via http:"
         "FilePath=96-1697035975/dir/3.txt"
         "Type=test_result,Master=true,RUN_ID=96-1697035975",
+        nargs="?",
+        const=None,
         default=None,
     )
     parser.add_argument(
@@ -39,6 +41,8 @@ def parse_args():
         "  https://http.fs.neo.org/HXSaMJXk2g8C14ht8HSi7BBaiYZ1HeWh2xnWPGQCg4H6/832-1695916423/file.txt"
         "Without --url_path_prefix the url will be:"
         "  https://http.fs.neo.org/HXSaMJXk2g8C14ht8HSi7BBaiYZ1HeWh2xnWPGQCg4H6/file.txt",
+        nargs="?",
+        const=None,
         default=None,
     )
     parser.add_argument(
@@ -54,6 +58,8 @@ def parse_args():
         help="Lifetime in epochs - number of epochs for object to stay valid. If provided, will be added to the "
         "current epoch to calculate expiration epoch. If not provided, or if it is 0, the report will be stored "
         "indefinitely",
+        nargs="?",
+        const=None,
         default=None,
     )
     parser.add_argument(
@@ -95,14 +101,14 @@ def push_file(
     mime_type = magic.from_file(filepath, mime=True)
     relative_path = os.path.relpath(filepath, os.path.dirname(directory))
 
-    if url_path_prefix is not None:
+    if url_path_prefix is not None and url_path_prefix != "":
         neofs_path_attr = os.path.join(url_path_prefix, relative_path)
     else:
         neofs_path_attr = relative_path
 
     base_cmd_with_file = f"{base_cmd} --file {filepath} --attributes {FILE_PATH}={neofs_path_attr},{CONTENT_TYPE}={mime_type}"
 
-    if attributes is not None:
+    if attributes is not None and attributes != "":
         base_cmd_with_file += f",{attributes}"
 
     print(f"Neofs cli cmd is: {base_cmd_with_file}")
