@@ -11,6 +11,12 @@ def pytest_addoption(parser):
         default=None,
         help="Directory combine report and zip files",
     )
+    parser.addoption(
+        "--data_dir_prefix",
+        action="store",
+        default=None,
+        help="Prefix dir to add to modified test data",
+    )
 
 
 @pytest.fixture
@@ -21,3 +27,8 @@ def base_url(request):
 @pytest.fixture
 def report_dir(request):
     return request.config.getoption("--report_dir")
+
+
+@pytest.fixture
+def data_dir_prefix(request):
+    return request.config.getoption("--data_dir_prefix")

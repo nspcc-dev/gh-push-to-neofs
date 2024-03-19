@@ -20,9 +20,10 @@ def download_file(url: str) -> str:
         "data/dir/subdir/subdir_2/5.txt",
     ],
 )
-def test_file_content(base_url, report_dir, path):
+def test_file_content(base_url, report_dir, data_dir_prefix, path):
     if base_url is None:
         pytest.fail("base_url is not provided. Provide it using --base_url option.")
+    full_path = os.path.join(data_dir_prefix or "", path)
 
     if not base_url.endswith("/"):
         base_url += "/"
@@ -35,9 +36,9 @@ def test_file_content(base_url, report_dir, path):
     print(f"full_url: {full_url}")
 
     remote_content = download_file(full_url)
-    with open(path, "r") as local_file:
+    with open(full_path, "r") as local_file:
         local_content = local_file.read()
 
     assert (
         remote_content == local_content
-    ), f"Contents of {full_url} and {path} do not match."
+    ), f"Contents of {full_url} and {full_path} do not match."
