@@ -2,6 +2,7 @@ import os
 import requests
 import pytest
 from urllib.parse import urljoin
+from conftest import DATA_PATH_LIST
 
 
 def download_file(url: str) -> str:
@@ -10,16 +11,7 @@ def download_file(url: str) -> str:
     return response.text
 
 
-@pytest.mark.parametrize(
-    "path",
-    [
-        "data/1.txt",
-        "data/2.txt",
-        "data/dir/3.txt",
-        "data/dir/subdir/4.txt",
-        "data/dir/subdir/subdir_2/5.txt",
-    ],
-)
+@pytest.mark.parametrize("path", DATA_PATH_LIST)
 def test_file_content(base_url, report_dir, data_dir_prefix, path):
     if base_url is None:
         pytest.fail("base_url is not provided. Provide it using --base_url option.")
