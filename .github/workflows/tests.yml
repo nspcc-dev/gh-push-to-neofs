@@ -276,3 +276,7 @@ jobs:
         run: |
           source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL" --report_dir="$REPORT_DIR" --data_dir_prefix=../$REPORT_DIR
         working-directory: ./tests
+
+      - name: tmate session
+        if: always()
+        uses: mxschmitt/action-tmate@v3    
