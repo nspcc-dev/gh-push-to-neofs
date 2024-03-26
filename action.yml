@@ -35,6 +35,14 @@ inputs:
     description: Number of epochs for object to stay valid
     required: false
     default: 0
+  REPLACE_OBJECTS:
+    description: Replace existing objects with the same attributes in the container
+    required: false
+    default: 'True'
+  REPLACE_CONTAINER_CONTENTS:
+    description: Remove all the old existing objects in the container after the new objects are uploaded
+    required: false
+    default: 'False'
 
 outputs:
   OUTPUT_CONTAINER_URL:
@@ -93,11 +101,14 @@ runs:
         NEOFS_ATTRIBUTES: ${{ inputs.NEOFS_ATTRIBUTES }}
         URL_PREFIX: ${{ inputs.URL_PREFIX }}
         LIFETIME: ${{ inputs.LIFETIME }}
+        REPLACE_OBJECTS: ${{ inputs.REPLACE_OBJECTS }}
+        REPLACE_CONTAINER_CONTENTS: ${{ inputs.REPLACE_CONTAINER_CONTENTS }}
         GITHUB_ACTION_PATH: ${{ github.action_path }}
       run: |
         source "$GITHUB_ACTION_PATH/venv/bin/activate" && NEOFS_CLI_PASSWORD=$NEOFS_WALLET_PASSWORD python "$GITHUB_ACTION_PATH/push-to-neofs.py" \
         --lifetime "$LIFETIME" --neofs_domain "$NEOFS_NETWORK_DOMAIN" --attributes "$NEOFS_ATTRIBUTES" \
         --cid "$STORE_OBJECTS_CID" --files-dir "$PATH_TO_FILES_DIR" --url_path_prefix "$URL_PREFIX" \
+        --replace-objects "$REPLACE_OBJECTS" --replace-container-contents "$REPLACE_CONTAINER_CONTENTS" \
         --wallet "$GITHUB_ACTION_PATH/wallet.json"
         BASE_URL="https://$NEOFS_HTTP_GATE/$STORE_OBJECTS_CID"
         if [ -z "$URL_PREFIX" ]; then

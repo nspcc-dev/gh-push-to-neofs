@@ -2,6 +2,7 @@ import os
 import requests
 import pytest
 from urllib.parse import urljoin
+from conftest import DATA_PATH_LIST
 
 
 def download_file(url: str) -> str:
@@ -10,19 +11,11 @@ def download_file(url: str) -> str:
     return response.text
 
 
-@pytest.mark.parametrize(
-    "path",
-    [
-        "data/1.txt",
-        "data/2.txt",
-        "data/dir/3.txt",
-        "data/dir/subdir/4.txt",
-        "data/dir/subdir/subdir_2/5.txt",
-    ],
-)
-def test_file_content(base_url, report_dir, path):
+@pytest.mark.parametrize("path", DATA_PATH_LIST)
+def test_file_content(base_url, report_dir, data_dir_prefix, path):
     if base_url is None:
         pytest.fail("base_url is not provided. Provide it using --base_url option.")
+    full_path = os.path.join(data_dir_prefix or "", path)
 
     if not base_url.endswith("/"):
         base_url += "/"
@@ -35,9 +28,9 @@ def test_file_content(base_url, report_dir, path):
     print(f"full_url: {full_url}")
 
     remote_content = download_file(full_url)
-    with open(path, "r") as local_file:
+    with open(full_path, "r") as local_file:
         local_content = local_file.read()
 
     assert (
         remote_content == local_content
-    ), f"Contents of {full_url} and {path} do not match."
+    ), f"Contents of {full_url} and {full_path} do not match."

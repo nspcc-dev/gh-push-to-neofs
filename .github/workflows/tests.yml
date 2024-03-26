@@ -76,6 +76,8 @@ jobs:
           PATH_TO_FILES_DIR: ${{ env.TESTS_DATA_DIR }}
           NEOFS_ATTRIBUTES: ${{ env.NEOFS_ATTRIBUTES }}
           URL_PREFIX: ${{ env.URL_PREFIX }}
+          REPLACE_OBJECTS: False
+          REPLACE_CONTAINER_CONTENTS: False
 
       - name: Run tests
         env:
@@ -96,6 +98,8 @@ jobs:
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.TESTS_DATA_DIR }}
           URL_PREFIX: ${{ env.URL_PREFIX }}
+          REPLACE_OBJECTS: False
+          REPLACE_CONTAINER_CONTENTS: False
 
       - name: Run tests
         env:
@@ -136,6 +140,8 @@ jobs:
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.PREFIX_DIR }}
           NEOFS_ATTRIBUTES: ${{ env.NEOFS_ATTRIBUTES }}
+          REPLACE_OBJECTS: False
+          REPLACE_CONTAINER_CONTENTS: False
 
       - name: Run tests
         env:
@@ -143,4 +149,140 @@ jobs:
           REPORT_DIR: ${{ env.PREFIX_DIR }}
         run: |
           source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL" --report_dir="$REPORT_DIR"
+        working-directory: ./tests
+
+      - name: Prepare directory name for tests with object by object replacement
+        shell: bash
+        env:
+          TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+        run: |
+          echo "REPL_DATA_DIR=${{ github.run_number }}-$TIMESTAMP-$(uuidgen)-obj-by-obj-replacement" >> $GITHUB_ENV
+
+      - name: Create a directory tree for tests with objects replacement
+        shell: bash
+        run: |
+          mkdir "$REPL_DATA_DIR"
+
+      - name: Move files to the directory tree for tests with url prefix
+        shell: bash
+        env:
+          SOURCE_DIR: ${{ env.TESTS_DATA_DIR }}
+          DEST_DIR: ${{ env.REPL_DATA_DIR }}
+        run: |
+          cp -a "$SOURCE_DIR" "$DEST_DIR"
+
+      - name: Run gh-push-to-neofs with pre objects replacement
+        id: gh_push_to_neofs_with_pre_replace_objects
+        uses: ./
+        with:
+          NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
+          NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
+          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
+          LIFETIME: ${{ vars.LIFETIME }}
+          PATH_TO_FILES_DIR: ${{ env.REPL_DATA_DIR }}
+          REPLACE_OBJECTS: False
+          REPLACE_CONTAINER_CONTENTS: False
+
+      - name: Modify test data
+        shell: bash
+        env:
+          DATA_DIR: ${{ env.REPL_DATA_DIR }}
+        run: |
+          find $DATA_DIR -type f -name '*.txt' -exec sed -i '$ s/$/_replaced_obj_by_obj/' {} +
+
+      - name: Run gh-push-to-neofs with objects replacement
+        id: gh_push_to_neofs_with_replace_objects
+        uses: ./
+        with:
+          NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
+          NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
+          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
+          LIFETIME: ${{ vars.LIFETIME }}
+          PATH_TO_FILES_DIR: ${{ env.REPL_DATA_DIR }}
+          REPLACE_OBJECTS: True
+          REPLACE_CONTAINER_CONTENTS: False
+
+      - name: Run tests
+        env:
+          OUTPUT_CONTAINER_URL: ${{ steps.gh_push_to_neofs_with_replace_objects.outputs.OUTPUT_CONTAINER_URL }}
+          REPORT_DIR: ${{ env.REPL_DATA_DIR }}
+        run: |
+          source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL" --report_dir="$REPORT_DIR" --data_dir_prefix=../$REPORT_DIR
+        working-directory: ./tests
+
+      - name: Prepare directory name for tests with entire container rewrite
+        shell: bash
+        env:
+          TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+        run: |
+          echo "REWRITE_CONT_DIR=${{ github.run_number }}-$TIMESTAMP-$(uuidgen)-cont-rewrite" >> $GITHUB_ENV
+
+      - name: Create a directory tree for tests with objects replacement
+        shell: bash
+        run: |
+          mkdir "$REWRITE_CONT_DIR"
+
+      - name: Move files to the directory tree for tests with url prefix
+        shell: bash
+        env:
+          SOURCE_DIR: ${{ env.TESTS_DATA_DIR }}
+          DEST_DIR: ${{ env.REWRITE_CONT_DIR }}
+        run: |
+          cp -a "$SOURCE_DIR" "$DEST_DIR"
+
+      - name: Run gh-push-to-neofs with pre objects replacement
+        id: gh_push_to_neofs_with_pre_cont_rewrite
+        uses: ./
+        with:
+          NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
+          NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
+          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
+          LIFETIME: ${{ vars.LIFETIME }}
+          PATH_TO_FILES_DIR: ${{ env.REWRITE_CONT_DIR }}
+          REPLACE_OBJECTS: False
+          REPLACE_CONTAINER_CONTENTS: False
+
+      - name: Modify test data
+        shell: bash
+        env:
+          DATA_DIR: ${{ env.REWRITE_CONT_DIR }}
+        run: |
+          find $DATA_DIR -type f -name '*.txt' -exec sed -i '$ s/$/_cont_rewrite/' {} +
+
+      - name: Run gh-push-to-neofs with objects replacement
+        id: gh_push_to_neofs_with_cont_rewrite
+        uses: ./
+        with:
+          NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
+          NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
+          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
+          LIFETIME: ${{ vars.LIFETIME }}
+          PATH_TO_FILES_DIR: ${{ env.REWRITE_CONT_DIR }}
+          REPLACE_OBJECTS: True
+          REPLACE_CONTAINER_CONTENTS: True
+
+      - name: Run tests
+        env:
+          OUTPUT_CONTAINER_URL: ${{ steps.gh_push_to_neofs_with_cont_rewrite.outputs.OUTPUT_CONTAINER_URL }}
+          REPORT_DIR: ${{ env.REWRITE_CONT_DIR }}
+        run: |
+          source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL" --report_dir="$REPORT_DIR" --data_dir_prefix=../$REPORT_DIR
+        working-directory: ./tests
+
+      - name: Run obj count test
+        env:
+          NEOFS_WALLET: "../wallet.json"
+          NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
+          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
+        run: |
+          source venv/bin/activate && pytest test_objects.py
         working-directory: ./tests
