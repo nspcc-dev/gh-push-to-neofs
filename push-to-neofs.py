@@ -3,8 +3,8 @@ import re
 import subprocess
 import argparse
 import magic
-import json
 import distutils.util
+from helpers.neofs import neofs_cli_execute
 
 FILE_PATH = "FilePath"  # the key for the attribute, is the path for the static page and allure report zip files
 CONTENT_TYPE = "ContentType"
@@ -111,45 +111,6 @@ def get_current_epoch(endpoint: str) -> int:
 
 def get_rpc_endpoint(neofs_domain: str) -> str:
     return f"{neofs_domain}:{PORT_8080}"
-
-
-def neofs_cli_execute(cmd: str, json_output: bool = False, timeout: int = None):
-    """
-    Executes a given command and returns its output.
-
-    :param cmd: Command to execute.
-    :param json_output: Specifies if the command output is JSON.
-    :param timeout: Optional timeout for command execution.
-    :return: Command output as a string or a JSON object.
-    """
-
-    try:
-        compl_proc = subprocess.run(
-            cmd,
-            check=True,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            timeout=timeout,
-            shell=True,
-        )
-
-        print(f"RC: {compl_proc.returncode}")
-        print(f"Output: {compl_proc.stdout}")
-
-        if json_output:
-            return json.loads(compl_proc.stdout)
-        else:
-            return compl_proc.stdout.splitlines()
-
-    except subprocess.CalledProcessError as e:
-        raise Exception(
-            f"Command failed: {e.cmd}\n"
-            f"Error code: {e.returncode}\n"
-            f"Output: {e.output}\n"
-            f"Stdout: {e.stdout}\n"
-            f"Stderr: {e.stderr}\n"
-        )
 
 
 def search_objects_in_container(endpoint: str,

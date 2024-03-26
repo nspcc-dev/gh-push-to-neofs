@@ -169,7 +169,7 @@ jobs:
           SOURCE_DIR: ${{ env.TESTS_DATA_DIR }}
           DEST_DIR: ${{ env.REPL_DATA_DIR }}
         run: |
-          rsync -av "$SOURCE_DIR" "$DEST_DIR"
+          cp -a "$SOURCE_DIR" "$DEST_DIR"
 
       - name: Run gh-push-to-neofs with pre objects replacement
         id: gh_push_to_neofs_with_pre_replace_objects
@@ -232,7 +232,7 @@ jobs:
           SOURCE_DIR: ${{ env.TESTS_DATA_DIR }}
           DEST_DIR: ${{ env.REWRITE_CONT_DIR }}
         run: |
-          rsync -av "$SOURCE_DIR" "$DEST_DIR"
+          cp -a "$SOURCE_DIR" "$DEST_DIR"
 
       - name: Run gh-push-to-neofs with pre objects replacement
         id: gh_push_to_neofs_with_pre_cont_rewrite
@@ -275,4 +275,14 @@ jobs:
           REPORT_DIR: ${{ env.REWRITE_CONT_DIR }}
         run: |
           source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL" --report_dir="$REPORT_DIR" --data_dir_prefix=../$REPORT_DIR
+        working-directory: ./tests
+
+      - name: Run obj count test
+        env:
+          NEOFS_WALLET: "../wallet.json"
+          NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
+          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
+        run: |
+          source venv/bin/activate && pytest test_objects.py
         working-directory: ./tests
