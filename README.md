@@ -6,7 +6,7 @@
   </picture>
 </p>
 <p align="center">
-  <a href="https://fs.neo.org">NeoFS</a> is a decentralized distributed object storage integrated with the <a href="https://neo.org">NEO Blockchain</a>.
+  <a href="https://fs.neo.org">NeoFS</a> is a decentralized distributed object storage integrated with the <a href="https://neo.org">Neo blockchain</a>.
 </p>
 
 # GitHub Action to Publish to NeoFS
