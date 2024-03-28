@@ -55,7 +55,7 @@ and `NEOFS_HTTP_GATE` environment variables.
 | Key                    | Value                                                                                 | Required | Default                |
 |------------------------|---------------------------------------------------------------------------------------|----------|------------------------|
 | `NEOFS_NETWORK_DOMAIN` | Rpc endpoint domain address                                                           | **No**   | st1.storage.fs.neo.org |
-| `NEOFS_HTTP_GATE`      | HTTP Gateway domain address                                                           | **No**   | http.fs.neo.org        |
+| `NEOFS_HTTP_GATE`      | REST gateway domain address                                                           | **No**   | rest.fs.neo.org        |
 | `STORE_OBJECTS_CID`    | Container ID for your data. For example: 7gHG4HB3BrpFcH9BN3KMZg6hEETx4mFP71nEoNXHFqrv | **Yes**  | N/A                    |
 
 
