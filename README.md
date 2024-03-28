@@ -14,9 +14,8 @@ This GitHub action allows you to save files as objects in the [NeoFS](https://fs
 
 This way you can both publicly and privately save logs and test results, host web pages, and publish releases.
 
-[Here](https://neospcc.medium.com/neofs-t5-testnet-has-been-started-ae75c30e856b) is a good article on how to get
-started using the NeoFS testnet, this may be useful if you have no experience with NeoFS and want to get started with
-the test network.
+To use this action you need a wallet, some NeoFS balance and a container. The
+easiest way to handle deposit and container creation is via [Panel](https://panel.fs.neo.org/).
 
 ## Supported platforms
 This action supports the following platforms:
