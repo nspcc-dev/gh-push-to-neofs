@@ -49,9 +49,9 @@ def parse_args():
         help="This is a prefix to the url address for each of the files(objects)."
         "For example, if Container ID is HXSaMJXk2g8C14ht8HSi7BBaiYZ1HeWh2xnWPGQCg4H6 and"
         "--url_path_prefix is '96-1697035975', then the url will be:"
-        "  https://http.fs.neo.org/HXSaMJXk2g8C14ht8HSi7BBaiYZ1HeWh2xnWPGQCg4H6/832-1695916423/file.txt"
+        "  https://rest.fs.neo.org/HXSaMJXk2g8C14ht8HSi7BBaiYZ1HeWh2xnWPGQCg4H6/832-1695916423/file.txt"
         "Without --url_path_prefix the url will be:"
-        "  https://http.fs.neo.org/HXSaMJXk2g8C14ht8HSi7BBaiYZ1HeWh2xnWPGQCg4H6/file.txt",
+        "  https://rest.fs.neo.org/HXSaMJXk2g8C14ht8HSi7BBaiYZ1HeWh2xnWPGQCg4H6/file.txt",
         nargs="?",
         const=None,
         default=None,

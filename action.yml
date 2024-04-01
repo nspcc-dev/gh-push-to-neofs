@@ -16,9 +16,9 @@ inputs:
     required: false
     default: 'st1.storage.fs.neo.org'
   NEOFS_HTTP_GATE:
-    description: HTTP Gateway domain address
+    description: REST gateway domain address
     required: false
-    default: 'http.fs.neo.org'
+    default: 'rest.fs.neo.org'
   STORE_OBJECTS_CID:
     description: Container ID for your data
     required: true

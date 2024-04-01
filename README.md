@@ -6,7 +6,7 @@
   </picture>
 </p>
 <p align="center">
-  <a href="https://fs.neo.org">NeoFS</a> is a decentralized distributed object storage integrated with the <a href="https://neo.org">NEO Blockchain</a>.
+  <a href="https://fs.neo.org">NeoFS</a> is a decentralized distributed object storage integrated with the <a href="https://neo.org">Neo blockchain</a>.
 </p>
 
 # GitHub Action to Publish to NeoFS
@@ -14,9 +14,8 @@ This GitHub action allows you to save files as objects in the [NeoFS](https://fs
 
 This way you can both publicly and privately save logs and test results, host web pages, and publish releases.
 
-[Here](https://neospcc.medium.com/neofs-t5-testnet-has-been-started-ae75c30e856b) is a good article on how to get
-started using the NeoFS testnet, this may be useful if you have no experience with NeoFS and want to get started with
-the test network.
+To use this action you need a wallet, some NeoFS balance and a container. The
+easiest way to handle deposit and container creation is via [Panel](https://panel.fs.neo.org/).
 
 ## Supported platforms
 This action supports the following platforms:
@@ -55,7 +54,7 @@ and `NEOFS_HTTP_GATE` environment variables.
 | Key                    | Value                                                                                 | Required | Default                |
 |------------------------|---------------------------------------------------------------------------------------|----------|------------------------|
 | `NEOFS_NETWORK_DOMAIN` | Rpc endpoint domain address                                                           | **No**   | st1.storage.fs.neo.org |
-| `NEOFS_HTTP_GATE`      | HTTP Gateway domain address                                                           | **No**   | http.fs.neo.org        |
+| `NEOFS_HTTP_GATE`      | REST gateway domain address                                                           | **No**   | rest.fs.neo.org        |
 | `STORE_OBJECTS_CID`    | Container ID for your data. For example: 7gHG4HB3BrpFcH9BN3KMZg6hEETx4mFP71nEoNXHFqrv | **Yes**  | N/A                    |
 
 
