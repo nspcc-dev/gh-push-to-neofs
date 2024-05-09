@@ -3,6 +3,7 @@ import re
 import subprocess
 import argparse
 import magic
+import mimetypes
 import distutils.util
 from helpers.neofs import neofs_cli_execute
 
@@ -188,7 +189,9 @@ def get_file_info(directory: str, url_path_prefix: str, strip_prefix: bool):
     for subdir, dirs, files in os.walk(base_path):
         for filename in files:
             filepath = os.path.join(subdir, filename)
-            mime_type = magic.from_file(filepath, mime=True)
+            mime_type = mimetypes.guess_type(filepath)[0]
+            if not mime_type:
+                mime_type = magic.from_file(filepath, mime=True)
             relative_path = os.path.relpath(filepath, relative_base)
 
             if url_path_prefix is not None and url_path_prefix != "":
