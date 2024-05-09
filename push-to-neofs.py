@@ -81,6 +81,13 @@ def parse_args():
         default=600,
     )
     parser.add_argument(
+        "--strip-prefix",
+        required=False,
+        type=str_to_bool,
+        help="Treat files-dir as the root of container (removing it from FilePath)",
+        default=False,
+    )
+    parser.add_argument(
         "--replace-objects",
         required=False,
         type=str_to_bool,
@@ -171,15 +178,18 @@ def compile_attributes(file_path: str, content_type: str = None,
         return attrs
 
 
-def get_file_info(directory: str, url_path_prefix: str):
+def get_file_info(directory: str, url_path_prefix: str, strip_prefix: bool):
     base_path = os.path.abspath(directory)
+    relative_base = directory
+    if not strip_prefix:
+        relative_base = os.path.dirname(directory)
     file_infos = []
 
     for subdir, dirs, files in os.walk(base_path):
         for filename in files:
             filepath = os.path.join(subdir, filename)
             mime_type = magic.from_file(filepath, mime=True)
-            relative_path = os.path.relpath(filepath, os.path.dirname(directory))
+            relative_path = os.path.relpath(filepath, relative_base)
 
             if url_path_prefix is not None and url_path_prefix != "":
                 neofs_path_attr = os.path.join(url_path_prefix, relative_path)
@@ -234,6 +244,7 @@ def push_files_to_neofs(
     lifetime: int,
     put_timeout: int,
     password: str,
+    strip_prefix: bool,
     replace_objects: bool,
     replace_container_contents: bool
 ) -> None:
@@ -247,7 +258,7 @@ def push_files_to_neofs(
         current_epoch = get_current_epoch(endpoint)
         expiration_epoch = current_epoch + lifetime
 
-    files = get_file_info(directory, url_path_prefix)
+    files = get_file_info(directory, url_path_prefix, strip_prefix)
     flat_existing_objects = []
     if replace_container_contents:
         flat_existing_objects = list_objects_in_container(endpoint, wallet, password, cid)
@@ -295,6 +306,7 @@ if __name__ == "__main__":
         args.lifetime,
         args.put_timeout,
         neofs_password,
+        args.strip_prefix,
         args.replace_objects,
         args.replace_container_contents,
     )
