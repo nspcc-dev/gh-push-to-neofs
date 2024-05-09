@@ -8,7 +8,7 @@ import distutils.util
 from helpers.neofs import neofs_cli_execute
 
 FILE_PATH = "FilePath"  # the key for the attribute, is the path for the static page and allure report zip files
-CONTENT_TYPE = "ContentType"
+CONTENT_TYPE = "Content-Type"
 NEOFS_WALLET_PASSWORD_ENV_NAME = "NEOFS_WALLET_PASSWORD"
 PORT_8080 = 8080
 
