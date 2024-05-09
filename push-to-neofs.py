@@ -242,6 +242,7 @@ def push_files_to_neofs(
     if not os.listdir(directory):
         raise Exception(f"Directory '{directory}' is empty.")
 
+    expiration_epoch = None
     if lifetime is not None and lifetime > 0:
         current_epoch = get_current_epoch(endpoint)
         expiration_epoch = current_epoch + lifetime
