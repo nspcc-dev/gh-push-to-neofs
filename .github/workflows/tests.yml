@@ -23,7 +23,12 @@ permissions: write-all
 
 jobs:
   run_system_tests:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os.runner }}
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        os: [{runner: 'ubuntu-latest'}, {runner: 'macos-14'}]
     timeout-minutes: 500
     steps:
       - name: Get the current date
@@ -190,7 +195,14 @@ jobs:
         env:
           DATA_DIR: ${{ env.REPL_DATA_DIR }}
         run: |
-          find $DATA_DIR -type f -name '*.txt' -exec sed -i '$ s/$/_replaced_obj_by_obj/' {} +
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            find $DATA_DIR -type f -name '*.txt' -exec sed -i '$ s/$/_replaced_obj_by_obj/' {} +
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            find $DATA_DIR -type f -name '*.txt' -exec sed -i '' '$ s/$/_replaced_obj_by_obj/' {} +
+          else
+            echo "$RUNNER_OS not supported"
+            exit 1
+          fi
 
       - name: Run gh-push-to-neofs with objects replacement
         id: gh_push_to_neofs_with_replace_objects
@@ -253,7 +265,14 @@ jobs:
         env:
           DATA_DIR: ${{ env.REWRITE_CONT_DIR }}
         run: |
-          find $DATA_DIR -type f -name '*.txt' -exec sed -i '$ s/$/_cont_rewrite/' {} +
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            find $DATA_DIR -type f -name '*.txt' -exec sed -i '$ s/$/_cont_rewrite/' {} +
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            find $DATA_DIR -type f -name '*.txt' -exec sed -i '' '$ s/$/_cont_rewrite/' {} +
+          else
+            echo "$RUNNER_OS not supported"
+            exit 1
+          fi
 
       - name: Run gh-push-to-neofs with objects replacement
         id: gh_push_to_neofs_with_cont_rewrite

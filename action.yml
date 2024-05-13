@@ -56,14 +56,24 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Download latest stable neofs-cli for uploading reports to NeoFS
+    - name: Download latest stable neofs-cli for uploading reports to NeoFS for Linux
       uses: dsaltares/fetch-gh-release-asset@1.1.1
+      if: runner.os == 'Linux'
       with:
         repo: 'nspcc-dev/neofs-node'
         version: 'tags/v0.38.1'
         file: 'neofs-cli-amd64'
         target: 'neofs/neofs-cli'
 
+    - name: Download latest stable neofs-cli for uploading reports to NeoFS for macOS
+      uses: dsaltares/fetch-gh-release-asset@1.1.1
+      if: runner.os == 'macOS'
+      with:
+        repo: 'nspcc-dev/neofs-node'
+        version: 'tags/v0.41.1'
+        file: 'neofs-cli-darwin-arm64'
+        target: 'neofs/neofs-cli'
+    
     - name: Chmod latest stable neofs-cli
       shell: bash
       run: |
@@ -83,6 +93,12 @@ runs:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
       run: |
         echo "$NEOFS_WALLET" | base64 -d > "$GITHUB_ACTION_PATH/wallet.json"
+
+    - name: Install required package if running on macos 
+      shell: bash
+      if: runner.os == 'macOS'
+      run:   |
+        brew install libmagic
 
     - name: Prepare venv
       shell: bash
