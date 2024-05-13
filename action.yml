@@ -61,8 +61,8 @@ runs:
       if: runner.os == 'Linux'
       with:
         repo: 'nspcc-dev/neofs-node'
-        version: 'tags/v0.38.1'
-        file: 'neofs-cli-amd64'
+        version: 'tags/v0.41.1'
+        file: 'neofs-cli-linux-amd64'
         target: 'neofs/neofs-cli'
 
     - name: Download latest stable neofs-cli for uploading reports to NeoFS for macOS
