@@ -71,6 +71,9 @@ can be used to autodelete objects that don't need to be stored forever (like log
 | `PATH_TO_FILES_DIR` | Path to the directory with the files to be pushed                                                                                                       | **Yes**  | N/A     |
 | `LIFETIME`          | Number of epochs (for mainnet 1 epoch is ~1 hour) for object to stay valid (it's deleted afterwards), "0" means "unlimited"                             | **No**   | 0       |
 | `NEOFS_ATTRIBUTES`  | User attributes in form of Key1=Value1,Key2=Value2. By default, each object contains attributes of relative path to the file and MIME type of the file. | **No**   | N/A     |
+| `REPLACE_OBJECTS`   | Boolean controlling object replacement by path, with "false" objects are uploaded and old ones are kept even if they have the same "FilePath"           | **No**   | true    |
+| `REPLACE_CONTAINER_CONTENTS` | Boolean controlling complete container contents replacement, when "true" all old container objects are deleted                                 | **No**   | false   |
+| `STRIP_PREFIX`      | Boolean controlling FilePath attribute of uploaded objects, when "true" PATH_TO_FILES_DIR is stripped from file path                                    | **No**   | false   |
 | `URL_PREFIX`        | Prefix added to the URL address in OUTPUT_CONTAINER_URL                                                                                                 | **No**   | N/A     |
 
 ## Output
