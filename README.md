@@ -58,34 +58,20 @@ and `NEOFS_HTTP_GATE` environment variables.
 | `STORE_OBJECTS_CID`    | Container ID for your data. For example: 7gHG4HB3BrpFcH9BN3KMZg6hEETx4mFP71nEoNXHFqrv | **Yes**  | N/A                    |
 
 
-### Workflow environment variables
+### Data handling environment variables
 The following variables must be passed as
 [GitHub Actions vars context](https://docs.github.com/en/actions/learn-github-actions/variables#using-the-vars-context-to-access-configuration-variable-values)
 or [GitHub Actions environment variables](https://docs.github.com/en/actions/learn-github-actions/variables).
 
+These inputs control uploaded data. Attributes can be used to identify all objects for a given uploaded set. `LIFETIME`
+can be used to autodelete objects that don't need to be stored forever (like logs or test reports).
+
 | Key                 | Value                                                                                                                                                   | Required | Default |
 |---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------|
 | `PATH_TO_FILES_DIR` | Path to the directory with the files to be pushed                                                                                                       | **Yes**  | N/A     |
+| `LIFETIME`          | Number of epochs (for mainnet 1 epoch is ~1 hour) for object to stay valid (it's deleted afterwards), "0" means "unlimited"                             | **No**   | 0       |
 | `NEOFS_ATTRIBUTES`  | User attributes in form of Key1=Value1,Key2=Value2. By default, each object contains attributes of relative path to the file and MIME type of the file. | **No**   | N/A     |
 | `URL_PREFIX`        | Prefix to the url address for each of the files(objects)                                                                                                | **No**   | N/A     |
-
-### Expiration period environment variables
-The following variables must be passed as 
-[GitHub Actions vars context](https://docs.github.com/en/actions/learn-github-actions/variables#using-the-vars-context-to-access-configuration-variable-values)
-or [GitHub Actions environment variables](https://docs.github.com/en/actions/learn-github-actions/variables).
-
-These environment variables are responsible for the storage time of the results in the storage network in epochs 
-(in the mainnet, an epoch is approximately equal to one hour, so we can assume that values are specified in HOURS).
-
-After the period is over, the data will be deleted. They are convenient to use for log rotation or test reports.
-
-They default to 0, in which case the data will be stored until they are manually deleted.
-We recommend setting a reasonable and convenient for work expiration period, for example, a month (744 hours).
-
-
-| Key        | Value                                     | Required | Default |
-|------------|-------------------------------------------|----------|---------|
-| `LIFETIME` | Number of epochs for object to stay valid | **No**   | 0       |
 
 ## Output
 
