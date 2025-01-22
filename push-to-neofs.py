@@ -4,7 +4,6 @@ import subprocess
 import argparse
 import magic
 import mimetypes
-import distutils.util
 from helpers.neofs import neofs_cli_execute
 
 FILE_PATH = "FilePath"  # the key for the attribute, is the path for the static page and allure report zip files
@@ -15,9 +14,12 @@ PORT_8080 = 8080
 
 def str_to_bool(value):
     """Convert a string representation of a boolean value to a boolean."""
-    try:
-        return bool(distutils.util.strtobool(value))
-    except ValueError:
+    value_lower = value.strip().lower()
+    if value_lower in {'true', 't', 'yes', 'y', '1'}:
+        return True
+    elif value_lower in {'false', 'f', 'no', 'n', '0'}:
+        return False
+    else:
         raise argparse.ArgumentTypeError(f"Invalid boolean value: {value}")
 
 
