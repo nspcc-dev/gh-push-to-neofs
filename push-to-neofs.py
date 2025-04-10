@@ -161,7 +161,11 @@ def delete_objects(
             f"NEOFS_CLI_PASSWORD={password} neofs-cli --rpc-endpoint {endpoint} "
             f"--wallet {wallet} object delete --cid {cid} --oid '{oid}'"
         )
-        neofs_cli_execute(cmd)
+        try:
+            neofs_cli_execute(cmd)
+        except Exception as e:
+            if "object already removed" not in str(e):
+                raise e
 
 
 def compile_attributes(file_path: str, content_type: str = None,
