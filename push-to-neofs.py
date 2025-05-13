@@ -232,7 +232,7 @@ def push_file(
 
     base_cmd = (
         f"NEOFS_CLI_PASSWORD={password} neofs-cli --rpc-endpoint {endpoint} "
-        f"--wallet {wallet}  object put --cid {cid} --timeout {put_timeout}s"
+        f"--wallet {wallet}  object put --cid {cid} --timeout {put_timeout}s --no-progress"
     )
     if expiration_epoch:
         base_cmd += f" --expire-at {expiration_epoch}"
