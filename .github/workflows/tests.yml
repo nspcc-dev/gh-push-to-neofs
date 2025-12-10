@@ -28,7 +28,7 @@ jobs:
       max-parallel: 1
       fail-fast: false
       matrix:
-        os: [{runner: 'ubuntu-latest'}, {runner: 'macos-14'}]
+        os: [{runner: 'ubuntu-latest'}, {runner: 'macos-latest'}]
     timeout-minutes: 500
     steps:
       - name: Get the current date
