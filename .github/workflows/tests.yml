@@ -75,7 +75,7 @@ jobs:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
           NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
-          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          HTTP_URL_PREFIX: ${{ vars.HTTP_URL_PREFIX }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.TESTS_DATA_DIR }}
@@ -98,7 +98,7 @@ jobs:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
           NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
-          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          HTTP_URL_PREFIX: ${{ vars.HTTP_URL_PREFIX }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.TESTS_DATA_DIR }}
@@ -140,7 +140,7 @@ jobs:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
           NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
-          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          HTTP_URL_PREFIX: ${{ vars.HTTP_URL_PREFIX }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.PREFIX_DIR }}
@@ -183,7 +183,7 @@ jobs:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
           NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
-          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          HTTP_URL_PREFIX: ${{ vars.HTTP_URL_PREFIX }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.REPL_DATA_DIR }}
@@ -211,7 +211,7 @@ jobs:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
           NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
-          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          HTTP_URL_PREFIX: ${{ vars.HTTP_URL_PREFIX }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.REPL_DATA_DIR }}
@@ -253,7 +253,7 @@ jobs:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
           NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
-          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          HTTP_URL_PREFIX: ${{ vars.HTTP_URL_PREFIX }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.REWRITE_CONT_DIR }}
@@ -281,7 +281,7 @@ jobs:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
           NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
-          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          HTTP_URL_PREFIX: ${{ vars.HTTP_URL_PREFIX }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.REWRITE_CONT_DIR }}
