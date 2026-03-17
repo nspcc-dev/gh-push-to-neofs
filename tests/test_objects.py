@@ -7,9 +7,9 @@ sys.path.insert(0, '..')
 from helpers.neofs import neofs_cli_execute
 
 
-def test_objects_number(wallet, wallet_password, network_domain, cid):
+def test_objects_number(wallet, wallet_password, neofs_endpoint, cid):
     cmd = (
-        f"NEOFS_CLI_PASSWORD={wallet_password} neofs-cli --rpc-endpoint {network_domain}:8080 "
+        f"NEOFS_CLI_PASSWORD={wallet_password} neofs-cli --rpc-endpoint {neofs_endpoint} "
         f"--wallet {wallet} container list-objects --cid {cid}"
     )
     objects_json = neofs_cli_execute(cmd, json_output=True)

@@ -48,12 +48,12 @@ or [GitHub Actions environment variables](https://docs.github.com/en/actions/lea
 
 Up-to-date information about NeoFS network can be seen on https://status.fs.neo.org.
 
-If you are using the NeoFS mainnet, we recommend that you do not change `NEOFS_NETWORK_DOMAIN`
+If you are using the NeoFS mainnet, we recommend that you do not change `NEOFS_ENDPOINT`
 and `NEOFS_HTTP_GATE` environment variables.
 
-| Key                    | Value                                                                                 | Required | Default                |
-|------------------------|---------------------------------------------------------------------------------------|----------|------------------------|
-| `NEOFS_NETWORK_DOMAIN` | Rpc endpoint domain address                                                           | **No**   | st1.storage.fs.neo.org |
+| Key               | Value                                                                                                                                     | Required | Default                     |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------|----------|-----------------------------|
+| `NEOFS_ENDPOINT`       | RPC endpoint for the NeoFS node. Supports full address with port and scheme, e.g. `host:8080` or `grpcs://host:9090`. | **No** | grpcs://st1.storage.fs.neo.org:8082 |
 | `NEOFS_HTTP_GATE`      | REST gateway domain address                                                           | **No**   | rest.fs.neo.org        |
 | `STORE_OBJECTS_CID`    | Container ID for your data. For example: 7gHG4HB3BrpFcH9BN3KMZg6hEETx4mFP71nEoNXHFqrv | **Yes**  | N/A                    |
 
@@ -118,7 +118,7 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
           NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}

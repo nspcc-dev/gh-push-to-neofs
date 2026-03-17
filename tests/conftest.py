@@ -29,7 +29,7 @@ def pytest_addoption(parser):
     )
     parser.addoption("--wallet", action="store", help="NeoFS wallet")
     parser.addoption("--wallet-password", action="store", help="NeoFS wallet password")
-    parser.addoption("--network-domain", action="store", help="NeoFS network domain")
+    parser.addoption("--neofs-endpoint", action="store", help="NeoFS RPC endpoint")
     parser.addoption("--cid", action="store", help="NeoFS Container ID")
 
 
@@ -59,8 +59,8 @@ def wallet_password(request):
 
 
 @pytest.fixture
-def network_domain(request):
-    return os.environ.get('NEOFS_NETWORK_DOMAIN') or request.config.getoption("--network-domain")
+def neofs_endpoint(request):
+    return os.environ.get('NEOFS_ENDPOINT') or request.config.getoption("--neofs-endpoint")
 
 
 @pytest.fixture

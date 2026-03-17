@@ -74,7 +74,7 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
           NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
@@ -97,7 +97,7 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
           NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
@@ -139,7 +139,7 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
           NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
@@ -182,7 +182,7 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
           NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
@@ -210,7 +210,7 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
           NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
@@ -252,7 +252,7 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
           NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
@@ -280,7 +280,7 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
           NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
@@ -300,7 +300,7 @@ jobs:
         env:
           NEOFS_WALLET: "../wallet.json"
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
         run: |
           source venv/bin/activate && pytest test_objects.py

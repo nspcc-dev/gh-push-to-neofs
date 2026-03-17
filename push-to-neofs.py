@@ -9,7 +9,6 @@ from helpers.neofs import neofs_cli_execute
 FILE_PATH = "FilePath"  # the key for the attribute, is the path for the static page and allure report zip files
 CONTENT_TYPE = "Content-Type"
 NEOFS_WALLET_PASSWORD_ENV_NAME = "NEOFS_WALLET_PASSWORD"
-PORT_8080 = 8080
 
 
 def str_to_bool(value):
@@ -26,10 +25,10 @@ def str_to_bool(value):
 def parse_args():
     parser = argparse.ArgumentParser(description="Process allure reports")
     parser.add_argument(
-        "--neofs_domain",
+        "--neofs_endpoint",
         required=True,
         type=str,
-        help="NeoFS network domain, example: st1.storage.fs.neo.org",
+        help="NeoFS RPC endpoint, example: grpcs://st1.storage.fs.neo.org:8082 or grpcs://private-node:9090",
     )
     parser.add_argument("--wallet", required=True, type=str, help="Path to the wallet")
     parser.add_argument("--cid", required=True, type=str, help="Container ID")
@@ -118,9 +117,6 @@ def get_current_epoch(endpoint: str) -> int:
     epoch_str = subprocess.check_output(cmd, shell=True).strip().decode("utf-8")
     return int(epoch_str)
 
-
-def get_rpc_endpoint(neofs_domain: str) -> str:
-    return f"{neofs_domain}:{PORT_8080}"
 
 
 def search_objects_in_container(endpoint: str,
@@ -303,11 +299,10 @@ def push_files_to_neofs(
 if __name__ == "__main__":
     args = parse_args()
     neofs_password = get_password()
-    rpc_endpoint = get_rpc_endpoint(args.neofs_domain)
 
     push_files_to_neofs(
         args.files_dir,
-        rpc_endpoint,
+        args.neofs_endpoint,
         args.wallet,
         args.cid,
         args.attributes,

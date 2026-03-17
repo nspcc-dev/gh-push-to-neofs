@@ -11,10 +11,11 @@ inputs:
   NEOFS_WALLET_PASSWORD:
     description: N3 wallet password
     required: true
-  NEOFS_NETWORK_DOMAIN:
-    description: Rpc endpoint domain address
+  NEOFS_ENDPOINT:
+    description: >
+      RPC endpoint for NeoFS node (e.g. grpcs://st1.storage.fs.neo.org:8082 or grpcs://private-node:9090).
     required: false
-    default: 'st1.storage.fs.neo.org'
+    default: 'grpcs://st1.storage.fs.neo.org:8082'
   NEOFS_HTTP_GATE:
     description: REST gateway domain address
     required: false
@@ -114,7 +115,7 @@ runs:
       id: put_files
       env:
         NEOFS_WALLET_PASSWORD: ${{ inputs.NEOFS_WALLET_PASSWORD }}
-        NEOFS_NETWORK_DOMAIN: ${{ inputs.NEOFS_NETWORK_DOMAIN }}
+        NEOFS_ENDPOINT: ${{ inputs.NEOFS_ENDPOINT }}
         STORE_OBJECTS_CID: ${{ inputs.STORE_OBJECTS_CID }}
         NEOFS_HTTP_GATE: ${{ inputs.NEOFS_HTTP_GATE }}
         PATH_TO_FILES_DIR: ${{ inputs.PATH_TO_FILES_DIR }}
@@ -127,7 +128,7 @@ runs:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
       run: |
         source "$GITHUB_ACTION_PATH/venv/bin/activate" && NEOFS_CLI_PASSWORD=$NEOFS_WALLET_PASSWORD python "$GITHUB_ACTION_PATH/push-to-neofs.py" \
-        --lifetime "$LIFETIME" --neofs_domain "$NEOFS_NETWORK_DOMAIN" --attributes "$NEOFS_ATTRIBUTES" \
+        --lifetime "$LIFETIME" --neofs_endpoint "$NEOFS_ENDPOINT" --attributes "$NEOFS_ATTRIBUTES" \
         --cid "$STORE_OBJECTS_CID" --files-dir "$PATH_TO_FILES_DIR" --url_path_prefix "$URL_PREFIX" \
         --replace-objects "$REPLACE_OBJECTS" --replace-container-contents "$REPLACE_CONTAINER_CONTENTS" \
         --strip-prefix "$STRIP_PREFIX" --wallet "$GITHUB_ACTION_PATH/wallet.json"
