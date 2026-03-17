@@ -3,11 +3,11 @@ import pytest
 
 
 DATA_PATH_LIST = [
-        "data/1.txt",
-        "data/2.txt",
-        "data/dir/3.txt",
-        "data/dir/subdir/4.txt",
-        "data/dir/subdir/subdir_2/5.txt",
+        "1.txt",
+        "2.txt",
+        "dir/3.txt",
+        "dir/subdir/4.txt",
+        "dir/subdir/subdir_2/5.txt",
     ]
 
 
