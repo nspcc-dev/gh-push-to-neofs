@@ -87,6 +87,66 @@ can be used to autodelete objects that don't need to be stored forever (like log
 |------------------------|-------------------------------------------------------------------------------------------------------------|----------|---------|
 | `OUTPUT_CONTAINER_URL` | Output example: https://http.storage.fs.neo.org/HXSaMJXk2g8C14ht8HSi7BBaiYZ1HeWh2xnWPGQCg4H6/872-1696332227 | **No** | N/A |
 
+# Migrating from 0.3.1 to 0.4.0
+
+Update your workflow files as described below.
+
+## 1. Replace `NEOFS_NETWORK_DOMAIN` with `NEOFS_ENDPOINT`
+
+`NEOFS_NETWORK_DOMAIN` accepted a bare domain name and the port was hardcoded to `8080` internally.
+`NEOFS_ENDPOINT` accepts a full address including scheme and port, giving you full control over which
+node and transport you use.
+
+```yaml
+# Before
+NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}  # e.g. st1.storage.fs.neo.org
+
+# After
+NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}  # e.g. grpcs://st1.storage.fs.neo.org:8082
+```
+
+If you were using the NeoFS mainnet default and did not set `NEOFS_NETWORK_DOMAIN` at all, the new
+default (`grpcs://st1.storage.fs.neo.org:8082`) will work without any changes.
+
+## 2. Replace `NEOFS_HTTP_GATE` with `HTTP_URL_PREFIX`
+
+`NEOFS_HTTP_GATE` accepted a gateway domain and the action constructed the container URL automatically.
+`HTTP_URL_PREFIX` expects the full URL prefix (including the container ID), which makes it easier to
+use custom gateways or CDN URLs in front of NeoFS.
+
+```yaml
+# Before
+NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}  # e.g. rest.fs.neo.org
+# The action would build: https://rest.fs.neo.org/<CID>/
+
+# After
+HTTP_URL_PREFIX: https://rest.fs.neo.org/${{ vars.STORE_OBJECTS_CID }}/
+# Or with a custom domain: https://reports.example.com/
+```
+
+The value of `OUTPUT_CONTAINER_URL` is now set directly to `HTTP_URL_PREFIX` (with `URL_PREFIX`
+appended if provided). If `HTTP_URL_PREFIX` is not set, the action falls back to
+`https://rest.fs.neo.org/<CID>/`.
+
+## 3. Remove `STRIP_PREFIX` — it is now always on
+
+Previously, `STRIP_PREFIX: true` was needed to make the action treat `PATH_TO_FILES_DIR` as the
+upload root (i.e. strip the directory name itself from every `FilePath` attribute). This is now the
+default and only behavior; the `STRIP_PREFIX` input no longer exists.
+
+```yaml
+# Before — you had to opt in
+STRIP_PREFIX: 'true'
+PATH_TO_FILES_DIR: ./my-reports
+
+# After — just remove STRIP_PREFIX; the directory is always treated as the root
+PATH_TO_FILES_DIR: ./my-reports
+```
+
+If you were relying on the old behavior where the directory name was included in `FilePath` (i.e.
+`STRIP_PREFIX` was `false` or not set), you will need to adjust your `PATH_TO_FILES_DIR` or
+`URL_PREFIX` values to reproduce the same object paths.
+
 # Dependencies
 
 ## Python
