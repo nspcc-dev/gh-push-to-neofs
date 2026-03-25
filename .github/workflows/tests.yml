@@ -74,8 +74,8 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
-          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
+          HTTP_URL_PREFIX: ${{ vars.HTTP_URL_PREFIX }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.TESTS_DATA_DIR }}
@@ -88,7 +88,7 @@ jobs:
         env:
           OUTPUT_CONTAINER_URL: ${{ steps.gh_push_to_neofs_with_url_prefix.outputs.OUTPUT_CONTAINER_URL }}
         run: |
-          source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL"
+          source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL" --data_dir_prefix=data --report_dir=$URL_PREFIX
         working-directory: ./tests
 
       - name: Run gh-push-to-neofs without attributes
@@ -97,8 +97,8 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
-          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
+          HTTP_URL_PREFIX: ${{ vars.HTTP_URL_PREFIX }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.TESTS_DATA_DIR }}
@@ -110,28 +110,8 @@ jobs:
         env:
           OUTPUT_CONTAINER_URL: ${{ steps.gh_push_to_neofs_with_url_prefix.outputs.OUTPUT_CONTAINER_URL }}
         run: |
-          source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL"
+          source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL" --data_dir_prefix=data --report_dir=$URL_PREFIX
         working-directory: ./tests
-
-      - name: Prepare directory name for tests without url prefix
-        shell: bash
-        env:
-          TIMESTAMP: ${{ steps.date.outputs.timestamp }}
-        run: |
-          echo "PREFIX_DIR=${{ github.run_number }}-$TIMESTAMP-$(uuidgen)" >> $GITHUB_ENV
-
-      - name: Create a directory tree for tests with url prefix
-        shell: bash
-        run: |
-          mkdir "$PREFIX_DIR"
-
-      - name: Move files to the directory tree for tests with url prefix
-        shell: bash
-        env:
-          SOURCE_DIR: ${{ env.TESTS_DATA_DIR }}
-          DEST_DIR: ${{ env.PREFIX_DIR }}
-        run: |
-          rsync -av "$SOURCE_DIR" "$DEST_DIR"
 
       - name: Run gh-push-to-neofs without url prefix
         id: gh_push_to_neofs_without_url_prefix
@@ -139,11 +119,11 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
-          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
+          HTTP_URL_PREFIX: ${{ vars.HTTP_URL_PREFIX }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
-          PATH_TO_FILES_DIR: ${{ env.PREFIX_DIR }}
+          PATH_TO_FILES_DIR: ${{ env.TESTS_DATA_DIR }}
           NEOFS_ATTRIBUTES: ${{ env.NEOFS_ATTRIBUTES }}
           REPLACE_OBJECTS: False
           REPLACE_CONTAINER_CONTENTS: False
@@ -151,9 +131,8 @@ jobs:
       - name: Run tests
         env:
           OUTPUT_CONTAINER_URL: ${{ steps.gh_push_to_neofs_without_url_prefix.outputs.OUTPUT_CONTAINER_URL }}
-          REPORT_DIR: ${{ env.PREFIX_DIR }}
         run: |
-          source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL" --report_dir="$REPORT_DIR"
+          source venv/bin/activate && pytest test_downloads.py --base_url="$OUTPUT_CONTAINER_URL" --data_dir_prefix=data
         working-directory: ./tests
 
       - name: Prepare directory name for tests with object by object replacement
@@ -174,7 +153,7 @@ jobs:
           SOURCE_DIR: ${{ env.TESTS_DATA_DIR }}
           DEST_DIR: ${{ env.REPL_DATA_DIR }}
         run: |
-          cp -a "$SOURCE_DIR" "$DEST_DIR"
+          cp -a "$SOURCE_DIR/." "$DEST_DIR/"
 
       - name: Run gh-push-to-neofs with pre objects replacement
         id: gh_push_to_neofs_with_pre_replace_objects
@@ -182,11 +161,12 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
-          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
+          HTTP_URL_PREFIX: ${{ vars.HTTP_URL_PREFIX }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.REPL_DATA_DIR }}
+          URL_PREFIX: ${{ env.REPL_DATA_DIR }}
           REPLACE_OBJECTS: False
           REPLACE_CONTAINER_CONTENTS: False
 
@@ -210,11 +190,12 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
-          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
+          HTTP_URL_PREFIX: ${{ vars.HTTP_URL_PREFIX }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.REPL_DATA_DIR }}
+          URL_PREFIX: ${{ env.REPL_DATA_DIR }}
           REPLACE_OBJECTS: True
           REPLACE_CONTAINER_CONTENTS: False
 
@@ -244,7 +225,7 @@ jobs:
           SOURCE_DIR: ${{ env.TESTS_DATA_DIR }}
           DEST_DIR: ${{ env.REWRITE_CONT_DIR }}
         run: |
-          cp -a "$SOURCE_DIR" "$DEST_DIR"
+          cp -a "$SOURCE_DIR/." "$DEST_DIR/"
 
       - name: Run gh-push-to-neofs with pre objects replacement
         id: gh_push_to_neofs_with_pre_cont_rewrite
@@ -252,11 +233,12 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
-          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
+          HTTP_URL_PREFIX: ${{ vars.HTTP_URL_PREFIX }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.REWRITE_CONT_DIR }}
+          URL_PREFIX: ${{ env.REWRITE_CONT_DIR }}
           REPLACE_OBJECTS: False
           REPLACE_CONTAINER_CONTENTS: False
 
@@ -280,11 +262,12 @@ jobs:
         with:
           NEOFS_WALLET: ${{ secrets.NEOFS_WALLET }}
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
-          NEOFS_HTTP_GATE: ${{ vars.NEOFS_HTTP_GATE }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
+          HTTP_URL_PREFIX: ${{ vars.HTTP_URL_PREFIX }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
           LIFETIME: ${{ vars.LIFETIME }}
           PATH_TO_FILES_DIR: ${{ env.REWRITE_CONT_DIR }}
+          URL_PREFIX: ${{ env.REWRITE_CONT_DIR }}
           REPLACE_OBJECTS: True
           REPLACE_CONTAINER_CONTENTS: True
 
@@ -300,7 +283,7 @@ jobs:
         env:
           NEOFS_WALLET: "../wallet.json"
           NEOFS_WALLET_PASSWORD: ${{ secrets.NEOFS_WALLET_PASSWORD }}
-          NEOFS_NETWORK_DOMAIN: ${{ vars.NEOFS_NETWORK_DOMAIN }}
+          NEOFS_ENDPOINT: ${{ vars.NEOFS_ENDPOINT }}
           STORE_OBJECTS_CID: ${{ vars.STORE_OBJECTS_CID }}
         run: |
           source venv/bin/activate && pytest test_objects.py

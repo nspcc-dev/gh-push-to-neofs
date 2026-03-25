@@ -9,7 +9,6 @@ from helpers.neofs import neofs_cli_execute
 FILE_PATH = "FilePath"  # the key for the attribute, is the path for the static page and allure report zip files
 CONTENT_TYPE = "Content-Type"
 NEOFS_WALLET_PASSWORD_ENV_NAME = "NEOFS_WALLET_PASSWORD"
-PORT_8080 = 8080
 
 
 def str_to_bool(value):
@@ -26,10 +25,10 @@ def str_to_bool(value):
 def parse_args():
     parser = argparse.ArgumentParser(description="Process allure reports")
     parser.add_argument(
-        "--neofs_domain",
+        "--neofs_endpoint",
         required=True,
         type=str,
-        help="NeoFS network domain, example: st1.storage.fs.neo.org",
+        help="NeoFS RPC endpoint, example: grpcs://st1.storage.fs.neo.org:8082 or grpcs://private-node:9090",
     )
     parser.add_argument("--wallet", required=True, type=str, help="Path to the wallet")
     parser.add_argument("--cid", required=True, type=str, help="Container ID")
@@ -49,12 +48,9 @@ def parse_args():
         "--url_path_prefix",
         required=False,
         type=str,
-        help="This is a prefix to the url address for each of the files(objects)."
-        "For example, if Container ID is HXSaMJXk2g8C14ht8HSi7BBaiYZ1HeWh2xnWPGQCg4H6 and"
-        "--url_path_prefix is '96-1697035975', then the url will be:"
-        "  https://rest.fs.neo.org/HXSaMJXk2g8C14ht8HSi7BBaiYZ1HeWh2xnWPGQCg4H6/832-1695916423/file.txt"
-        "Without --url_path_prefix the url will be:"
-        "  https://rest.fs.neo.org/HXSaMJXk2g8C14ht8HSi7BBaiYZ1HeWh2xnWPGQCg4H6/file.txt",
+        help="Prefix added to the FilePath attribute of each uploaded object. "
+        "For example, with --url_path_prefix '96-1697035975' a file 'report.html' gets "
+        "FilePath=96-1697035975/report.html; without it, FilePath=report.html.",
         nargs="?",
         const=None,
         default=None,
@@ -84,13 +80,6 @@ def parse_args():
         default=600,
     )
     parser.add_argument(
-        "--strip-prefix",
-        required=False,
-        type=str_to_bool,
-        help="Treat files-dir as the root of container (removing it from FilePath)",
-        default=False,
-    )
-    parser.add_argument(
         "--replace-objects",
         required=False,
         type=str_to_bool,
@@ -118,9 +107,6 @@ def get_current_epoch(endpoint: str) -> int:
     epoch_str = subprocess.check_output(cmd, shell=True).strip().decode("utf-8")
     return int(epoch_str)
 
-
-def get_rpc_endpoint(neofs_domain: str) -> str:
-    return f"{neofs_domain}:{PORT_8080}"
 
 
 def search_objects_in_container(endpoint: str,
@@ -185,11 +171,8 @@ def compile_attributes(file_path: str, content_type: str = None,
         return attrs
 
 
-def get_file_info(directory: str, url_path_prefix: str, strip_prefix: bool):
+def get_file_info(directory: str, url_path_prefix: str):
     base_path = os.path.abspath(directory)
-    relative_base = directory
-    if not strip_prefix:
-        relative_base = os.path.dirname(directory)
     file_infos = []
 
     for subdir, dirs, files in os.walk(base_path):
@@ -198,7 +181,7 @@ def get_file_info(directory: str, url_path_prefix: str, strip_prefix: bool):
             mime_type = mimetypes.guess_type(filepath)[0]
             if not mime_type:
                 mime_type = magic.from_file(filepath, mime=True)
-            relative_path = os.path.relpath(filepath, relative_base)
+            relative_path = os.path.relpath(filepath, base_path)
 
             if url_path_prefix is not None and url_path_prefix != "":
                 neofs_path_attr = os.path.join(url_path_prefix, relative_path)
@@ -253,7 +236,6 @@ def push_files_to_neofs(
     lifetime: int,
     put_timeout: int,
     password: str,
-    strip_prefix: bool,
     replace_objects: bool,
     replace_container_contents: bool
 ) -> None:
@@ -267,7 +249,7 @@ def push_files_to_neofs(
         current_epoch = get_current_epoch(endpoint)
         expiration_epoch = current_epoch + lifetime
 
-    files = get_file_info(directory, url_path_prefix, strip_prefix)
+    files = get_file_info(directory, url_path_prefix)
     flat_existing_objects = []
     if replace_container_contents:
         flat_existing_objects = list_objects_in_container(endpoint, wallet, password, cid)
@@ -303,11 +285,10 @@ def push_files_to_neofs(
 if __name__ == "__main__":
     args = parse_args()
     neofs_password = get_password()
-    rpc_endpoint = get_rpc_endpoint(args.neofs_domain)
 
     push_files_to_neofs(
         args.files_dir,
-        rpc_endpoint,
+        args.neofs_endpoint,
         args.wallet,
         args.cid,
         args.attributes,
@@ -315,7 +296,6 @@ if __name__ == "__main__":
         args.lifetime,
         args.put_timeout,
         neofs_password,
-        args.strip_prefix,
         args.replace_objects,
         args.replace_container_contents,
     )

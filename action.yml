@@ -11,14 +11,19 @@ inputs:
   NEOFS_WALLET_PASSWORD:
     description: N3 wallet password
     required: true
-  NEOFS_NETWORK_DOMAIN:
-    description: Rpc endpoint domain address
+  NEOFS_ENDPOINT:
+    description: >
+      RPC endpoint for NeoFS node (e.g. grpcs://st1.storage.fs.neo.org:8082 or grpcs://private-node:9090).
     required: false
-    default: 'st1.storage.fs.neo.org'
-  NEOFS_HTTP_GATE:
-    description: REST gateway domain address
+    default: 'grpcs://st1.storage.fs.neo.org:8082'
+  HTTP_URL_PREFIX:
+    description: >
+      Full URL prefix used to build OUTPUT_CONTAINER_URL
+      (e.g. https://rest.fs.neo.org/MYCID/ or https://reports.example.com/).
+      If not set, the container URL will be built as https://rest.fs.neo.org/$STORE_OBJECTS_CID/ and
+      if URL_PREFIX is set, it is appended to https://rest.fs.neo.org/$STORE_OBJECTS_CID/$URL_PREFIX/.
     required: false
-    default: 'rest.fs.neo.org'
+    default: ''
   STORE_OBJECTS_CID:
     description: Container ID for your data
     required: true
@@ -29,16 +34,14 @@ inputs:
     description: User attributes in form of Key1=Value1,Key2=Value2
     required: false
   URL_PREFIX:
-    description: Prefix to the url address for each of the files(objects)
+    description: >
+      Prefix added to the FilePath attribute of each uploaded object (e.g. a run ID like
+      "96-1697035975"). When HTTP_URL_PREFIX is not set, also appended to OUTPUT_CONTAINER_URL.
     required: false
   LIFETIME:
     description: Number of epochs for object to stay valid
     required: false
     default: 0
-  STRIP_PREFIX:
-    description: Drop PATH_TO_FILES_DIR from uploaded data, treat it as the root of container
-    required: false
-    default: 'False'
   REPLACE_OBJECTS:
     description: Replace existing objects with the same attributes in the container
     required: false
@@ -114,28 +117,29 @@ runs:
       id: put_files
       env:
         NEOFS_WALLET_PASSWORD: ${{ inputs.NEOFS_WALLET_PASSWORD }}
-        NEOFS_NETWORK_DOMAIN: ${{ inputs.NEOFS_NETWORK_DOMAIN }}
+        NEOFS_ENDPOINT: ${{ inputs.NEOFS_ENDPOINT }}
         STORE_OBJECTS_CID: ${{ inputs.STORE_OBJECTS_CID }}
-        NEOFS_HTTP_GATE: ${{ inputs.NEOFS_HTTP_GATE }}
+        HTTP_URL_PREFIX: ${{ inputs.HTTP_URL_PREFIX }}
         PATH_TO_FILES_DIR: ${{ inputs.PATH_TO_FILES_DIR }}
         NEOFS_ATTRIBUTES: ${{ inputs.NEOFS_ATTRIBUTES }}
         URL_PREFIX: ${{ inputs.URL_PREFIX }}
         LIFETIME: ${{ inputs.LIFETIME }}
-        STRIP_PREFIX: ${{ inputs.STRIP_PREFIX }}
         REPLACE_OBJECTS: ${{ inputs.REPLACE_OBJECTS }}
         REPLACE_CONTAINER_CONTENTS: ${{ inputs.REPLACE_CONTAINER_CONTENTS }}
         GITHUB_ACTION_PATH: ${{ github.action_path }}
       run: |
         source "$GITHUB_ACTION_PATH/venv/bin/activate" && NEOFS_CLI_PASSWORD=$NEOFS_WALLET_PASSWORD python "$GITHUB_ACTION_PATH/push-to-neofs.py" \
-        --lifetime "$LIFETIME" --neofs_domain "$NEOFS_NETWORK_DOMAIN" --attributes "$NEOFS_ATTRIBUTES" \
+        --lifetime "$LIFETIME" --neofs_endpoint "$NEOFS_ENDPOINT" --attributes "$NEOFS_ATTRIBUTES" \
         --cid "$STORE_OBJECTS_CID" --files-dir "$PATH_TO_FILES_DIR" --url_path_prefix "$URL_PREFIX" \
         --replace-objects "$REPLACE_OBJECTS" --replace-container-contents "$REPLACE_CONTAINER_CONTENTS" \
-        --strip-prefix "$STRIP_PREFIX" --wallet "$GITHUB_ACTION_PATH/wallet.json"
-        BASE_URL="https://$NEOFS_HTTP_GATE/$STORE_OBJECTS_CID"
-        if [ -z "$URL_PREFIX" ]; then
-          echo "container_url=$BASE_URL/" >> $GITHUB_OUTPUT
-          echo "$BASE_URL/"
+        --wallet "$GITHUB_ACTION_PATH/wallet.json"
+        if [ -n "$HTTP_URL_PREFIX" ]; then
+          CONTAINER_URL="$HTTP_URL_PREFIX"
         else
-          echo "container_url=$BASE_URL/$URL_PREFIX/" >> $GITHUB_OUTPUT
-          echo "$BASE_URL/$URL_PREFIX/"
+          CONTAINER_URL="https://rest.fs.neo.org/$STORE_OBJECTS_CID/"
+          if [ -n "$URL_PREFIX" ]; then
+            CONTAINER_URL="${CONTAINER_URL}${URL_PREFIX}/"
+          fi
         fi
+        echo "container_url=$CONTAINER_URL" >> $GITHUB_OUTPUT
+        echo "$CONTAINER_URL"
