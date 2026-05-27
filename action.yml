@@ -64,7 +64,7 @@ runs:
       if: runner.os == 'Linux'
       with:
         repo: 'nspcc-dev/neofs-node'
-        version: 'tags/v0.41.1'
+        version: 'tags/v0.53.0'
         file: 'neofs-cli-linux-amd64'
         target: 'neofs/neofs-cli'
 
@@ -73,7 +73,7 @@ runs:
       if: runner.os == 'macOS'
       with:
         repo: 'nspcc-dev/neofs-node'
-        version: 'tags/v0.41.1'
+        version: 'tags/v0.53.0'
         file: 'neofs-cli-darwin-arm64'
         target: 'neofs/neofs-cli'
     
